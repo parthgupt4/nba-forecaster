@@ -117,33 +117,33 @@ export default function SearchBar() {
             if (results.length > 0) setOpen(true);
           }}
           placeholder="Search any NBA player..."
-          className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          className="w-full pl-12 pr-4 py-4 bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-lg focus:outline-none focus:border-blue-600 transition-colors"
           autoComplete="off"
         />
         {loading && (
           <div className="absolute inset-y-0 right-4 flex items-center">
-            <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           </div>
         )}
       </div>
 
       {showDropdown && (
-        <div className="absolute z-50 mt-2 w-full max-w-2xl rounded-2xl bg-slate-800 border border-slate-700 shadow-2xl overflow-hidden">
+        <div className="absolute z-50 mt-px w-full bg-slate-800 border border-slate-700 overflow-hidden">
           {results.map((player) => (
             <button
               key={player.id}
               onClick={() => handleSelect(player)}
-              className="w-full text-left px-5 py-3.5 hover:bg-slate-700 flex items-center gap-3 transition-colors border-b border-slate-700 last:border-0"
+              className="w-full text-left px-5 py-3 hover:bg-slate-700 flex items-center gap-3 transition-colors border-b border-slate-700/60 last:border-0"
             >
-              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white shrink-0">
+              <div className="w-8 h-8 bg-slate-700 border border-slate-600 flex items-center justify-center text-xs font-bold text-slate-300 shrink-0">
                 {player.first_name[0]}{player.last_name[0]}
               </div>
               <div>
-                <div className="text-white font-medium">
+                <div className="text-white text-sm font-semibold">
                   {player.first_name} {player.last_name}
                 </div>
-                <div className="text-slate-400 text-sm">
-                  {player.team?.full_name} · {player.position || 'N/A'}
+                <div className="text-slate-500 text-xs">
+                  {player.team?.full_name}{player.position ? ` · ${player.position}` : ''}
                 </div>
               </div>
             </button>
@@ -153,17 +153,14 @@ export default function SearchBar() {
 
       {showRecent && (
         <div className="mt-8">
-          <p className="text-slate-500 text-sm font-medium mb-3 uppercase tracking-wider">Recent Searches</p>
+          <p className="text-slate-600 text-[11px] font-semibold mb-3 uppercase tracking-widest">Recent</p>
           <div className="flex flex-wrap gap-2">
             {recent.map((p) => (
               <button
                 key={p.id}
                 onClick={() => handleRecentSelect(p)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800 border border-slate-700 hover:border-blue-500 hover:bg-slate-700 text-slate-300 text-sm transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-slate-200 text-sm transition-colors"
               >
-                <div className="w-5 h-5 rounded-full bg-blue-600/60 flex items-center justify-center text-xs font-bold text-white">
-                  {p.name[0]}
-                </div>
                 {p.name}
               </button>
             ))}

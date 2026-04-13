@@ -69,7 +69,7 @@ export default function PlayerPage({
             <p className="text-slate-400">{error}</p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
             >
               ← Search Another Player
             </Link>
