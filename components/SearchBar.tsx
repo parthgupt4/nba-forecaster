@@ -67,11 +67,26 @@ export default function SearchBar() {
     }
     setLoading(true);
     try {
+      console.log('[Search] fetching:', q);
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-      const data: BDLPlayer[] = await res.json();
-      setResults(data);
+      console.log('[Search] response status:', res.status);
+      const json = await res.json();
+      console.log('[Search] response body:', json);
+      if (!res.ok) {
+        console.error('[Search] API error:', res.status, json);
+        setResults([]);
+        return;
+      }
+      if (!Array.isArray(json)) {
+        console.error('[Search] expected array, got:', typeof json, json);
+        setResults([]);
+        return;
+      }
+      console.log('[Search] got', json.length, 'players');
+      setResults(json);
       setOpen(true);
-    } catch {
+    } catch (err) {
+      console.error('[Search] fetch exception:', err);
       setResults([]);
     } finally {
       setLoading(false);

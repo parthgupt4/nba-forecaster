@@ -7,11 +7,13 @@ export async function GET(request: NextRequest) {
     return Response.json([]);
   }
 
+  console.log('[/api/search] query:', query);
   try {
     const players = await searchPlayers(query.trim());
+    console.log('[/api/search] returning', players.length, 'players');
     return Response.json(players);
   } catch (err) {
-    console.error('Search error:', err);
-    return Response.json({ error: 'Search failed' }, { status: 500 });
+    console.error('[/api/search] error:', err);
+    return Response.json({ error: 'Search failed', detail: String(err) }, { status: 500 });
   }
 }

@@ -44,7 +44,11 @@ async function nbaFetch<T extends NBAStatsResponse>(url: string): Promise<T> {
     headers: NBA_HEADERS,
     next: { revalidate: 300 },
   });
-  if (!res.ok) throw new Error(`NBA stats API error: ${res.status} ${url}`);
+  if (!res.ok) {
+    const body = await res.text().catch(() => '(unreadable)');
+    console.error(`[nbaFetch] ${res.status} ${url}\nBody: ${body.slice(0, 500)}`);
+    throw new Error(`NBA stats API error: ${res.status} ${url}`);
+  }
   return res.json() as Promise<T>;
 }
 
@@ -96,10 +100,16 @@ let _playersCache: BDLPlayer[] | null = null;
 async function getAllPlayers(): Promise<BDLPlayer[]> {
   if (_playersCache) return _playersCache;
 
-  const data = await nbaFetch<NBAStatsResponse>(
-    `${NBA_BASE}/commonallplayers?LeagueID=00&Season=${CURRENT_SEASON}&IsOnlyCurrentSeason=1`
-  );
+  const url = `${NBA_BASE}/commonallplayers?LeagueID=00&Season=${CURRENT_SEASON}&IsOnlyCurrentSeason=1`;
+  console.log('[getAllPlayers] fetching:', url);
+  const data = await nbaFetch<NBAStatsResponse>(url);
+  console.log('[getAllPlayers] resultSets:', data.resultSets?.map((r) => `${r.name}(${r.rowSet?.length ?? 0} rows)`));
   const rows = parseResultSet(data, 'CommonAllPlayers');
+  console.log('[getAllPlayers] parsed rows:', rows.length);
+
+  const sampleRow = rows[0];
+  console.log('[getAllPlayers] sample row keys:', sampleRow ? Object.keys(sampleRow) : 'no rows');
+  console.log('[getAllPlayers] sample row:', sampleRow);
 
   _playersCache = rows
     .filter(
@@ -133,15 +143,18 @@ async function getAllPlayers(): Promise<BDLPlayer[]> {
       };
     });
 
+  console.log('[getAllPlayers] cached', _playersCache.length, 'active players, sample:', _playersCache[0]);
   return _playersCache;
 }
 
 export async function searchPlayers(query: string): Promise<BDLPlayer[]> {
   const all = await getAllPlayers();
   const q = query.toLowerCase();
-  return all
+  const matches = all
     .filter((p) => `${p.first_name} ${p.last_name}`.toLowerCase().includes(q))
     .slice(0, 10);
+  console.log('[searchPlayers] query:', q, '→', matches.length, 'matches');
+  return matches;
 }
 
 // ─── Player Info ───────────────────────────────────────────────────────────────
