@@ -1,4 +1,4 @@
-import { getGameLogs } from '@/lib/balldontlie';
+import { getPlayer, getNbaStatsPlayerId, getGameLogs } from '@/lib/balldontlie';
 import type { NextRequest } from 'next/server';
 
 type Params = { id: string };
@@ -14,7 +14,12 @@ export async function GET(
   }
 
   try {
-    const logs = await getGameLogs(playerId);
+    const playerInfo = await getPlayer(playerId);
+    const nbaStatsId = await getNbaStatsPlayerId(
+      playerInfo.first_name,
+      playerInfo.last_name
+    );
+    const logs = await getGameLogs(nbaStatsId);
     return Response.json(logs);
   } catch (err) {
     console.error('Game logs error:', err);
